@@ -9,6 +9,8 @@ type WsMessage struct {
 	Username       string         `json:"username"`
 	Message        string         `json:"message"`
 	ConnectedUsers []ResponseUser `json:"connectedUsers"`
+	LuckNumber     int            `json:"pickNumber"`
+	NumbersList    map[int]string `json:"numbersList"`
 }
 
 var broadcast = make(chan WsMessage)

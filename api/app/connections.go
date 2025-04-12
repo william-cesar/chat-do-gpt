@@ -64,6 +64,7 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 		mu.Unlock()
 
 		msg.ConnectedUsers = connectedUsers
+		msg.NumbersList = luckNumbers
 
 		broadcast <- msg
 	}
