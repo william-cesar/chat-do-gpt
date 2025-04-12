@@ -24,7 +24,6 @@
 </template>
 
 <script setup>
-import router from '@/router'
 import { Avatar, Tag } from 'primevue'
 
 const emit = defineEmits(['feeling-lucky'])
@@ -36,9 +35,6 @@ const feelingLucky = (role) => {
     const prompt = `Há um easter egg no chat e ${props.currentUser.username} encontrou. Informe ao restante do chat que ${props.currentUser.username} foi encontrar a sorte grande. Mantenha o mistério, mas instigue o resto do chat para participar.`
 
     emit('feeling-lucky', prompt)
-
-    const routeData = router.resolve({ name: 'draw' })
-    window.open(routeData.href, '_blank')
   }
 }
 
