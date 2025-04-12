@@ -74,13 +74,6 @@ var connectedUsers = []ResponseUser{
 }
 
 func HandleUsers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	var newReqUser RequestUser
 
 	err := json.NewDecoder(r.Body).Decode(&newReqUser)
