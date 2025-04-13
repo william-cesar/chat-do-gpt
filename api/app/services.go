@@ -10,6 +10,8 @@ func HandleEntryPoints() {
 	http.HandleFunc("/login", corsMiddleware(HandleUsers))
 	http.HandleFunc("/ws", HandleConnections)
 	http.HandleFunc("/pick-number", corsMiddleware(HandlePickNumber))
+	http.HandleFunc("/draw", corsMiddleware(HandleDraw))
+	http.HandleFunc("/ai", corsMiddleware(HandleAiMessages))
 
 	go HandleMessages()
 	InitNumbers()

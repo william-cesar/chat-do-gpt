@@ -11,6 +11,7 @@ type WsMessage struct {
 	ConnectedUsers []ResponseUser `json:"connectedUsers"`
 	LuckNumber     int            `json:"pickNumber"`
 	NumbersList    map[int]string `json:"numbersList"`
+	Status         string         `json:"status,omitempty"`
 }
 
 var broadcast = make(chan WsMessage)
