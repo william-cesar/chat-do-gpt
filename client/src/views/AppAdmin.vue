@@ -6,54 +6,33 @@
       Área administrativa
     </h1>
     <section class="w-250 flex flex-col gap-4 justify-center items-center">
-      <h2 class="text-3xl font-bold">Números selecionados</h2>
-      <div class="grid grid-cols-10 gap-4">
-        <Button
-          v-for="(val, key) of numbers"
-          :label="key"
-          rounded
-          :key="key"
-          :severity="val === 'free' ? 'primary' : 'secondary'"
-        />
-      </div>
+      <h2 class="text-3xl font-bold">Vencedor</h2>
+      <p>Id: {{ winner.winnerId }}</p>
+      <p>Número da sorte: {{ winner.luckNumber }}</p>
+      <p>Nome: {{ winner.username }}</p>
     </section>
     <Button label="Sortear vencedor" @click="pickWinner" />
-    <Button label="Reiniciar" @click="reset" />
   </main>
 </template>
 
 <script setup>
-import { drawService, resetService } from '@/services'
+import { drawService } from '@/services'
 import { Button, useToast } from 'primevue'
+import { ref } from 'vue'
+
+const winner = ref({})
 
 const toast = useToast()
-const numbers = {
-  1: 'free',
-  2: 'uuid'
-}
 
 const pickWinner = async () => {
   try {
     const response = await drawService()
-    console.log(response)
+    winner.value = response
   } catch {
     toast.add({
       severity: 'error',
       summary: 'Erro',
       detail: 'Ocorreu um erro ao sortear o vencedor. Tente novamente',
-      life: 3000
-    })
-  }
-}
-
-const reset = async () => {
-  try {
-    await resetService()
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: 'Ocorreu um erro ao reiniciar. Tente novamente',
       life: 3000
     })
   }

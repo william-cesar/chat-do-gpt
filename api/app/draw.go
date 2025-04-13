@@ -21,11 +21,13 @@ type LuckNumberResponse struct {
 type DrawResponse struct {
 	LuckNumber int    `json:"luckNumber"`
 	WinnerId   string `json:"winnerId"`
+	Username   string `json:"username"`
 }
 
 type DrawMessageResponse struct {
-	Result string `json:"result"`
-	UserId string `json:"userId"`
+	Result   string `json:"result"`
+	UserId   string `json:"userId"`
+	Username string `json:"username,omitempty"`
 }
 
 const TOTAL_LUCK_NUMBERS = 60
@@ -82,12 +84,22 @@ func Draw() int {
 	return selectedNumbers[seed.Intn(len(selectedNumbers))]
 }
 
-func SendMessages(winnerId string) {
+func findUserById(id string) ResponseUser {
+	for _, user := range connectedUsers {
+		if user.Id == id {
+			return user
+		}
+	}
+	return ResponseUser{}
+}
+
+func SendMessages(winnerId, winnerUsername string) {
 	for conn, id := range clients {
 		if id == winnerId {
 			msg := DrawMessageResponse{
-				Result: "winner",
-				UserId: id,
+				Result:   "winner",
+				UserId:   id,
+				Username: winnerUsername,
 			}
 
 			if err := conn.WriteJSON(msg); err != nil {
@@ -121,10 +133,11 @@ func HandleDraw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	winnerId := luckNumbers[winner]
+	winnerUser := findUserById(winnerId)
 
-	SendMessages(winnerId)
+	SendMessages(winnerId, winnerUser.Username)
 
-	if err := json.NewEncoder(w).Encode(DrawResponse{LuckNumber: winner, WinnerId: winnerId}); err != nil {
+	if err := json.NewEncoder(w).Encode(DrawResponse{LuckNumber: winner, WinnerId: winnerId, Username: winnerUser.Username}); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

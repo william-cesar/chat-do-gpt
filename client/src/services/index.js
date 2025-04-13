@@ -52,14 +52,3 @@ export const drawService = async () => {
 
   return handleResponse(response)
 }
-
-export const resetService = async () => {
-  const response = await fetch('http://localhost:8080/reset', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-
-  return handleResponse(response)
-}
