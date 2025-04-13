@@ -7,7 +7,7 @@
       <li
         v-for="message in messages"
         :key="message.id"
-        :class="message.id === currentUser.id ? 'items-end' : 'items-start'"
+        :class="messageStyles(message).li"
         class="p-2 flex flex-col"
       >
         <span
@@ -17,10 +17,7 @@
         >
           {{ message.username }}
         </span>
-        <p
-          :class="message.id !== currentUser.id && 'rounded-tl-none'"
-          class="text-sm font-bold bg-gradient-to-r from-gray-100 to-gray-300 p-3.5 mt-[-0.75rem] rounded-2xl text-gray-950 break-words max-w-[80%]"
-        >
+        <p :class="messageStyles(message).p">
           {{ message.message }}
         </p>
       </li>
@@ -38,6 +35,26 @@ const emit = defineEmits(['onMessage'])
 const props = defineProps(['messages', 'currentUser'])
 
 const messagesContainer = ref(null)
+
+const messageStyles = (message) => {
+  const { status, id } = message
+  const isCurrentUser = id === props.currentUser.id
+
+  if (status === 'welcome') {
+    return {
+      li: 'items-center',
+      p: 'text-gray-400'
+    }
+  }
+
+  const baseP =
+    'text-sm font-bold bg-gradient-to-r from-gray-100 to-gray-300 p-3.5 mt-[-0.75rem] rounded-2xl text-gray-950 break-words max-w-[80%]'
+
+  return {
+    li: isCurrentUser ? 'items-end' : 'items-start',
+    p: isCurrentUser ? `${baseP} rounded-tl-none` : baseP
+  }
+}
 
 watch(
   () => props.messages,
