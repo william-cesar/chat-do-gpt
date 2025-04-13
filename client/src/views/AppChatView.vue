@@ -20,6 +20,7 @@
 import AppChat from '@/components/AppChat.vue'
 import AppDraw from '@/components/AppDraw.vue'
 import AppList from '@/components/AppList.vue'
+import router from '@/router'
 import { chatService } from '@/services'
 import { onMounted, ref } from 'vue'
 
@@ -47,16 +48,14 @@ const initConn = () => {
     const greeted = window.sessionStorage.getItem('users')
     if (!greeted) {
       try {
-        const response = await chatService(
-          `Você é o administrador do chat. Seja amigável e positivo. Com uma mensagem curta, dê boas vindas para ${username}.
-          Contexto adicional: há ${users.value.length} usuários conectados.`
-        )
-
         sendMessage({
-          username: 'Gemini',
-          id: 'gemini',
-          message: response
+          username,
+          id,
+          message: `${username} entrou no chat.`,
+          status: 'welcome'
         })
+
+        talkToGemini(`Dê boas vindas a "${username}". Avise "@${username}" que há um easter egg.`)
       } catch {
         return
       }
@@ -70,12 +69,12 @@ const initConn = () => {
 
 const talkToGemini = async (prompt) => {
   try {
-    const response = await chatService(prompt)
+    const { message } = await chatService(prompt)
 
     sendMessage({
       username: 'Gemini',
       id: 'gemini',
-      message: response
+      message
     })
   } catch {
     sendMessage({
@@ -87,7 +86,12 @@ const talkToGemini = async (prompt) => {
 }
 
 const handleMessages = ({ data }) => {
-  const { id, username, message, connectedUsers, numbersList } = JSON.parse(data)
+  const { id, username, message, connectedUsers, numbersList, result, status } = JSON.parse(data)
+
+  if (result) {
+    handleResults(data)
+    return
+  }
 
   luckNumbers.value = numbersList
 
@@ -98,7 +102,18 @@ const handleMessages = ({ data }) => {
 
   const item = users.value.find((user) => user.id === id)
   const color = item ? item.info.color : '#000000'
-  messages.value.push({ id, username, message, color })
+  messages.value.push({ id, username, message, color, status })
+}
+
+const handleResults = (data) => {
+  const { result } = JSON.parse(data)
+
+  if (result === 'winner') {
+    window.sessionStorage.setItem('isWinner', true)
+    return router.push({ name: 'winner' })
+  }
+
+  return router.push({ name: 'gameOver' })
 }
 
 const sendMessage = (evt) => {
@@ -109,7 +124,7 @@ const sendMessage = (evt) => {
   if (message.toLowerCase().includes('@gemini')) {
     evt.message = evt.message.replace('@gemini', '')
 
-    const prompt = `${evt.username} disse: ${evt.message}. Interaja com ${evt.username}.
+    const prompt = `${evt.username} disse: ${evt.message}.
     Contexto adicional: há ${users.value.length} usuários conectados e ${messages.value.length} mensagens enviadas.`
 
     talkToGemini(prompt)

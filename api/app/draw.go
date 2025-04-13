@@ -2,7 +2,10 @@ package app
 
 import (
 	"encoding/json"
+	"log"
+	"math/rand"
 	"net/http"
+	"time"
 )
 
 type LuckNumberRequest struct {
@@ -13,6 +16,16 @@ type LuckNumberRequest struct {
 type LuckNumberResponse struct {
 	NumbersList map[int]string `json:"numbersList"`
 	LuckNumber  int            `json:"luckNumber"`
+}
+
+type DrawResponse struct {
+	LuckNumber int    `json:"luckNumber"`
+	WinnerId   string `json:"winnerId"`
+}
+
+type DrawMessageResponse struct {
+	Result string `json:"result"`
+	UserId string `json:"userId"`
 }
 
 const TOTAL_LUCK_NUMBERS = 60
@@ -46,6 +59,72 @@ func HandlePickNumber(w http.ResponseWriter, r *http.Request) {
 	PickNumber(newReqUser)
 
 	if err := json.NewEncoder(w).Encode(newReqUser); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func Draw() int {
+	seed := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	selectedNumbers := make([]int, 0)
+
+	for num, slot := range luckNumbers {
+		if slot != "free" {
+			selectedNumbers = append(selectedNumbers, num)
+		}
+	}
+
+	if len(selectedNumbers) == 0 {
+		return 0
+	}
+
+	return selectedNumbers[seed.Intn(len(selectedNumbers))]
+}
+
+func SendMessages(winnerId string) {
+	for conn, id := range clients {
+		if id == winnerId {
+			msg := DrawMessageResponse{
+				Result: "winner",
+				UserId: id,
+			}
+
+			if err := conn.WriteJSON(msg); err != nil {
+				log.Println("Error writing message on connection: ", err)
+				conn.Close()
+				delete(clients, conn)
+			}
+		} else {
+			msg := DrawMessageResponse{
+				Result: "game-over",
+				UserId: id,
+			}
+
+			if err := conn.WriteJSON(msg); err != nil {
+				log.Println("Error writing message on connection: ", err)
+				conn.Close()
+				delete(clients, conn)
+			}
+		}
+	}
+}
+
+func HandleDraw(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	winner := Draw()
+
+	if winner == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	winnerId := luckNumbers[winner]
+
+	SendMessages(winnerId)
+
+	if err := json.NewEncoder(w).Encode(DrawResponse{LuckNumber: winner, WinnerId: winnerId}); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
