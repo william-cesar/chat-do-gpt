@@ -19,13 +19,13 @@ func HandleEntryPoints() {
 	go HandleMessages()
 	InitNumbers()
 
-	log.Println("App started")
-
 	baseUrl := os.Getenv("BASE_URL")
 
 	if baseUrl == "" {
 		log.Fatal("BASE_URL not found")
 	}
+
+	log.Println("App running at: ", baseUrl)
 
 	if err := http.ListenAndServe(baseUrl, nil); err != nil {
 		log.Fatal("Error to serve: ", err)
