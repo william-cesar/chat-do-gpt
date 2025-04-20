@@ -61,7 +61,6 @@ router.beforeEach((to, from, next) => {
   const chatUser = window.sessionStorage.getItem('chatUser')
 
   if (to.name === 'admin') {
-    console.log('admin')
     return next()
   }
 
