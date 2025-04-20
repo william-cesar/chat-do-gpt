@@ -10,15 +10,16 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
-    npm install -g yarn && \
-    npm install -g vite
+    npm install -g yarn
 
 WORKDIR /app
 
 COPY . .
 
-WORKDIR /app/api/cmd
+WORKDIR /app/client
+RUN yarn install
 
+WORKDIR /app/api/cmd
 RUN make build
 
 EXPOSE 1000
