@@ -4,7 +4,7 @@ import AppAdmin from '@/views/AppAdmin.vue'
 import AppNotFound from '@/views/AppNotFound.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/'),
   routes: [
     {
       path: '/',
