@@ -1,10 +1,28 @@
-# Build and start the API
-FROM ./api as api
-RUN docker build -t chat-api .
+FROM golang:1.24.0 AS api-build
+WORKDIR /app/api
+COPY api/go.* .
+RUN go mod download
+COPY api/ .
+RUN go build -o main main.go
 
-# Build and start the client
-FROM ./client as client
-RUN docker build -t chat-client .
+FROM node:20 AS client-build
+WORKDIR /app/client
+COPY client/package.json client/yarn.lock ./
+RUN yarn install
+COPY client/ .
+RUN yarn run build
 
-# Start both containers
-CMD ["docker", "run", "-p", "8080:8080", "-e", "GEMINI_API_KEY=${GEMINI_API_KEY}", "--name", "chat-api", "chat-api"] && ["docker", "run", "-p", "5173:5173", "-e", "NODE_ENV=production", "--name", "chat-client", "chat-client"]
+
+FROM golang:1.24.0
+WORKDIR /app
+
+COPY --from=api-build /app/api/main /app/api
+
+COPY --from=client-build /app/client/dist /app/client
+
+RUN apt-get update && apt-get install -y nodejs npm
+RUN npm install -g serve
+
+EXPOSE 8080 5173
+
+CMD sh -c "(/app/api & serve -s /app/client -l 5173)"
