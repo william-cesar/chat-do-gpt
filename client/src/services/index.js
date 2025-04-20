@@ -7,7 +7,7 @@ const handleResponse = (response) => {
 }
 
 export const logInService = async (payload) => {
-  const response = await fetch('http://localhost:8080/login', {
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -19,7 +19,7 @@ export const logInService = async (payload) => {
 }
 
 export const chatService = async (prompt) => {
-  const response = await fetch('http://localhost:8080/ai', {
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/ai`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ export const chatService = async (prompt) => {
 }
 
 export const pickNumberService = async (payload) => {
-  const response = await fetch('http://localhost:8080/pick-number', {
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/pick-number`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -43,7 +43,7 @@ export const pickNumberService = async (payload) => {
 }
 
 export const drawService = async () => {
-  const response = await fetch('http://localhost:8080/draw', {
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/draw`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

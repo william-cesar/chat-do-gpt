@@ -3,6 +3,9 @@ package app
 import (
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func HandleEntryPoints() {
@@ -16,9 +19,19 @@ func HandleEntryPoints() {
 	go HandleMessages()
 	InitNumbers()
 
-	log.Println("Listening on port 8080")
+	log.Println("App started")
 
-	if err := http.ListenAndServe("0.0.0.0:8080", nil); err != nil {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file: ", err)
+	}
+
+	baseUrl := os.Getenv("BASE_URL")
+
+	if baseUrl == "" {
+		log.Fatal("BASE_URL not found")
+	}
+
+	if err := http.ListenAndServe(baseUrl, nil); err != nil {
 		log.Fatal("Error to serve: ", err)
 	}
 }
