@@ -1,5 +1,7 @@
-import AppHome from '@/views/AppHome.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import AppHome from '@/views/AppHome.vue'
+import AppAdmin from '@/views/AppAdmin.vue'
+import AppNotFound from '@/views/AppNotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +19,7 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/AppAdmin.vue')
+      component: AppAdmin
     },
     {
       path: '/winner',
@@ -50,7 +52,7 @@ const router = createRouter({
     {
       path: '/:catchAll(.*)',
       name: 'notFound',
-      component: () => import('@/views/AppNotFound.vue')
+      component: AppNotFound
     }
   ]
 })
