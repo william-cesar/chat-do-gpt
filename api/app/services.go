@@ -12,11 +12,11 @@ import (
 func HandleEntryPoints() {
 	http.Handle("/", spaHandler("static", "index.html"))
 
-	http.HandleFunc("/login", corsMiddleware(HandleUsers))
-	http.HandleFunc("/ws", HandleConnections)
-	http.HandleFunc("/pick-number", corsMiddleware(HandlePickNumber))
-	http.HandleFunc("/draw", corsMiddleware(HandleDraw))
-	http.HandleFunc("/ai", corsMiddleware(HandleAiMessages))
+	http.HandleFunc("/api/login", corsMiddleware(HandleUsers))
+	http.HandleFunc("/api/ws", HandleConnections)
+	http.HandleFunc("/api/pick-number", corsMiddleware(HandlePickNumber))
+	http.HandleFunc("/api/draw", corsMiddleware(HandleDraw))
+	http.HandleFunc("/api/ai", corsMiddleware(HandleAiMessages))
 
 	go HandleMessages()
 	InitNumbers()
