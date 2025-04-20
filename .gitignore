@@ -2,3 +2,5 @@
 /client/dist
 /client/.env
 /api/.env
+/api/static
+/api/chat-do-gpt

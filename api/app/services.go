@@ -4,11 +4,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
 
 func HandleEntryPoints() {
+	http.Handle("/", spaHandler("static", "index.html"))
 
 	http.HandleFunc("/login", corsMiddleware(HandleUsers))
 	http.HandleFunc("/ws", HandleConnections)
@@ -56,4 +58,22 @@ func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 		next(w, r)
 	}
+}
+
+func spaHandler(staticPath, indexPath string) http.Handler {
+	fs := http.FileServer(http.Dir(staticPath))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		path := filepath.Join(staticPath, r.URL.Path)
+		_, err := os.Stat(path)
+		if os.IsNotExist(err) {
+			http.ServeFile(w, r, filepath.Join(staticPath, indexPath))
+			return
+		} else if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		fs.ServeHTTP(w, r)
+	})
 }
