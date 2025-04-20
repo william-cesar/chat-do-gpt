@@ -37,8 +37,18 @@ func HandleEntryPoints() {
 }
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file: ", err)
+	}
+
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+
+	if allowedOrigins == "" {
+		log.Fatal("ALLOWED_ORIGINS not found")
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", allowedOrigins)
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
