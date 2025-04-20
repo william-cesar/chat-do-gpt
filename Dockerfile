@@ -22,6 +22,6 @@ RUN yarn install
 WORKDIR /app/api/cmd
 RUN make build
 
-EXPOSE 1000
+EXPOSE 10000
 
 CMD ["../chat-do-gpt"]
