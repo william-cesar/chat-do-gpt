@@ -32,7 +32,7 @@ const luckNumbers = ref({})
 const drawVisible = ref(false)
 
 onMounted(() => {
-  wsConnection = new WebSocket('ws://localhost:8080/ws')
+  wsConnection = new WebSocket(`${import.meta.env.VITE_WS_URL}/ws`)
 
   initConn()
 })
