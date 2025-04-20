@@ -10,7 +10,6 @@ import (
 	"os"
 
 	"github.com/google/generative-ai-go/genai"
-	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
 )
 
@@ -40,11 +39,6 @@ var AI_CONFIG = ConfigAI{
 
 func handleAiClient(prompt string) (string, error) {
 	ctx := context.Background()
-
-	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env file: ", err)
-		return "", err
-	}
 
 	apiKey := os.Getenv("GEMINI_API_KEY")
 

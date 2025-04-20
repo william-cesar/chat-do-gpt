@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"github.com/joho/godotenv"
 )
 
 func HandleEntryPoints() {
@@ -23,10 +21,6 @@ func HandleEntryPoints() {
 
 	log.Println("App started")
 
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file: ", err)
-	}
-
 	baseUrl := os.Getenv("BASE_URL")
 
 	if baseUrl == "" {
@@ -39,10 +33,6 @@ func HandleEntryPoints() {
 }
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file: ", err)
-	}
-
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 
 	if allowedOrigins == "" {
