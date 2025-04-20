@@ -3,7 +3,7 @@
     modal
     :closable="userHasNumber"
     header="Escolha seu número da sorte"
-    class="w-full max-w-150 h-1/2 sm:!block !hidden"
+    class="w-full max-w-150 h-fit sm:!block !hidden overflow-y-auto"
   >
     <div class="grid grid-cols-10 gap-4">
       <Button

@@ -10,11 +10,7 @@
         :class="messageStyles(message).li"
         class="p-2 flex flex-col"
       >
-        <span
-          :style="{ color: message.color }"
-          v-if="message.id !== currentUser.id"
-          class="font-bold text-sm px-4 py-1 rounded rounded-bl-none z-10 bg-gradient-to-r from-emerald-900 to-emerald-600"
-        >
+        <span :style="{ color: message.color }" :class="messageStyles(message).span">
           {{ message.username }}
         </span>
         <p :class="messageStyles(message).p">
@@ -43,7 +39,8 @@ const messageStyles = (message) => {
   if (status === 'welcome') {
     return {
       li: 'items-center',
-      p: 'text-gray-400'
+      p: 'text-gray-400',
+      span: 'hidden'
     }
   }
 
@@ -52,7 +49,10 @@ const messageStyles = (message) => {
 
   return {
     li: isCurrentUser ? 'items-end' : 'items-start',
-    p: isCurrentUser ? `${baseP} rounded-tl-none` : baseP
+    p: isCurrentUser ? baseP : `${baseP} rounded-tl-none`,
+    span: isCurrentUser
+      ? 'hidden'
+      : 'font-bold text-sm px-4 py-1 rounded rounded-bl-none z-10 bg-gradient-to-r from-emerald-900 to-emerald-600'
   }
 }
 
