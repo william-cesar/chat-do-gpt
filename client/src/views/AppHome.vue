@@ -23,7 +23,7 @@
             $form.username.error?.message
           }}</Message>
         </div>
-        <Button type="submit" label="Criar usuário" :disabled="disabled || $form.invalid" />
+        <Button type="submit" label="Criar usuário" :disabled="$form.invalid" :loading="loading" />
       </Form>
     </div>
   </section>
@@ -53,12 +53,12 @@ const resolver = ({ values }) => {
   }
 }
 
-const disabled = ref(false)
+const loading = ref(false)
 
 const toast = useToast()
 
 const onFormSubmit = async ({ valid, values }) => {
-  disabled.value = true
+  loading.value = true
   if (valid) {
     try {
       const response = await logInService(values)
@@ -73,8 +73,7 @@ const onFormSubmit = async ({ valid, values }) => {
         summary: 'Erro',
         detail: 'Ocorreu um erro ao criar o usuário'
       })
-    } finally {
-      disabled.value = false
+      loading.value = false
     }
   }
 }
