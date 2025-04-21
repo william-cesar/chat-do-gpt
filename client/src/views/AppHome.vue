@@ -23,7 +23,7 @@
             $form.username.error?.message
           }}</Message>
         </div>
-        <Button type="submit" label="Criar usuário" />
+        <Button type="submit" label="Criar usuário" :disabled="disabled || $form.invalid" />
       </Form>
     </div>
   </section>
@@ -34,7 +34,7 @@ import router from '@/router'
 import { logInService } from '@/services'
 import { Form } from '@primevue/forms'
 import { Button, IftaLabel, InputText, Message, useToast } from 'primevue'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 const initialValues = reactive({
   username: ''
@@ -53,9 +53,12 @@ const resolver = ({ values }) => {
   }
 }
 
+const disabled = ref(false)
+
 const toast = useToast()
 
 const onFormSubmit = async ({ valid, values }) => {
+  disabled.value = true
   if (valid) {
     try {
       const response = await logInService(values)
@@ -70,6 +73,8 @@ const onFormSubmit = async ({ valid, values }) => {
         summary: 'Erro',
         detail: 'Ocorreu um erro ao criar o usuário'
       })
+    } finally {
+      disabled.value = false
     }
   }
 }
