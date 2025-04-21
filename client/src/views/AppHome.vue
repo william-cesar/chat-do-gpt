@@ -23,7 +23,12 @@
             $form.username.error?.message
           }}</Message>
         </div>
-        <Button type="submit" label="Criar usuário" :disabled="$form.invalid" :loading="loading" />
+        <Button
+          type="submit"
+          label="Criar usuário"
+          :disabled="$form.invalid || loading"
+          :loading="loading"
+        />
       </Form>
     </div>
   </section>
