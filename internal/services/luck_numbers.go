@@ -66,6 +66,7 @@ func HandleLuckNumber(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(ResponseMessage{Message: err.Error()})
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(ResponseMessage{Message: msg})
 }

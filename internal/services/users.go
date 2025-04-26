@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"slices"
+
 	"github.com/google/uuid"
 	"github.com/william-cesar/chat-do-gpt/internal/logger"
 )
@@ -29,6 +31,8 @@ type UserResponse struct {
 type ResponseMessage struct {
 	Message string `json:"message"`
 }
+
+var connectedUsers []UserResponse
 
 func generateUserColor(nm string) string {
 	var COLORS = []string{
@@ -65,6 +69,19 @@ func newUser(uname string) UserResponse {
 	}
 }
 
+func addConnectedUser(user UserResponse) {
+	connectedUsers = append(connectedUsers, user)
+}
+
+func removeConnectedUser(id string) {
+	for i, user := range connectedUsers {
+		if user.Id == id {
+			connectedUsers = slices.Delete(connectedUsers, i, i+1)
+			break
+		}
+	}
+}
+
 func HandleUsers(w http.ResponseWriter, r *http.Request) {
 	var reqUser UserRequest
 
@@ -95,4 +112,5 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 
 	msg := fmt.Sprintf("New user created: %s", newUser.Username)
 	logger.Log(logger.INFO, msg)
+	addConnectedUser(newUser)
 }
