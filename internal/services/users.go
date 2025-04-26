@@ -26,7 +26,7 @@ type UserResponse struct {
 	Info     UserInfo `json:"info"`
 }
 
-type ErrorResponse struct {
+type ResponseMessage struct {
 	Message string `json:"message"`
 }
 
@@ -72,8 +72,7 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil || reqUser.Username == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(ErrorResponse{Message: "Invalid content"})
+		json.NewEncoder(w).Encode(ResponseMessage{Message: "Invalid content"})
 		return
 	}
 
@@ -81,20 +80,16 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 
 	if len(reqUser.Username) < MIN_UNAME_LEN {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(ErrorResponse{Message: "Username must be at least 3 characters long"})
+		json.NewEncoder(w).Encode(ResponseMessage{Message: "Username must be at least 3 characters long"})
 		return
 	}
 
 	newUser := newUser(reqUser.Username)
-
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(newUser); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(ErrorResponse{Message: "Failed to create user"})
+		json.NewEncoder(w).Encode(ResponseMessage{Message: "Failed to create user"})
 		return
 	}
 

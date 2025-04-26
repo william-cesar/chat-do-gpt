@@ -7,14 +7,18 @@ import (
 	"path"
 
 	"github.com/william-cesar/chat-do-gpt/internal/logger"
-	"github.com/william-cesar/chat-do-gpt/internal/services"
+	svc "github.com/william-cesar/chat-do-gpt/internal/services"
 )
 
 const V1_PREFIX = "/api/v1"
 const DEV_BASE_URL = "0.0.0.0:8080"
 
 func HandleRequests() {
-	http.HandleFunc(path.Join(V1_PREFIX, "/login"), corsMiddleware(services.HandleUsers))
+	jm := jsonMiddleware
+	cm := corsMiddleware
+
+	http.HandleFunc(path.Join(V1_PREFIX, "/login"), useMiddlewares(svc.HandleUsers, jm, cm))
+	http.HandleFunc(path.Join(V1_PREFIX, "/luck-number"), useMiddlewares(svc.HandleLuckNumber, jm, cm))
 
 	baseUrl := os.Getenv("BASE_URL")
 
