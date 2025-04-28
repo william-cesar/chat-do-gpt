@@ -23,13 +23,13 @@ type clientConn struct {
 }
 
 type WsMessage struct {
-	Id             string         `json:"id"`
-	Username       string         `json:"username"`
-	Message        string         `json:"message"`
-	ConnectedUsers []UserResponse `json:"connectedUsers"`
-	LuckNumber     int            `json:"pickNumber,omitempty"`
-	NumbersList    map[int]string `json:"numbersList"`
-	Status         string         `json:"status,omitempty"`
+	Id             string                    `json:"id"`
+	Username       string                    `json:"username"`
+	Message        string                    `json:"message"`
+	ConnectedUsers []UserResponse            `json:"connectedUsers"`
+	LuckNumber     int                       `json:"pickNumber,omitempty"`
+	NumbersList    map[int]LuckNumberRequest `json:"numbersList"`
+	Status         string                    `json:"status,omitempty"`
 }
 
 var clients = make(map[*websocket.Conn]clientConn)
@@ -67,10 +67,8 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 		err := conn.ReadJSON(&msg)
 
 		if err != nil {
-			logger.Log(logger.WARN, fmt.Sprintf("Failed to handle connection from %s", msg.Username))
 			mu.Lock()
-			delete(clients, conn)
-			removeConnectedUser(msg.Id)
+			handleMessageError(msg.Username, msg.Id, conn)
 			mu.Unlock()
 			break
 		}
@@ -84,6 +82,13 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 		broadcast <- msg
 	}
+}
+
+func handleMessageError(name, id string, conn *websocket.Conn) {
+	logger.Log(logger.WARN, fmt.Sprintf("Failed to write message from %s", name))
+	conn.Close()
+	removeConnectedUser(id)
+	delete(clients, conn)
 }
 
 func Handlemessages() {

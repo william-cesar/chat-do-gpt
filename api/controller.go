@@ -18,8 +18,9 @@ func HandleRequests() {
 	cm := corsMiddleware
 
 	http.HandleFunc(path.Join(V1_PREFIX, "/login"), useMiddlewares(svc.HandleUsers, jm, cm))
-	http.HandleFunc(path.Join(V1_PREFIX, "/luck-number"), useMiddlewares(svc.HandleLuckNumber, jm, cm))
+	http.HandleFunc(path.Join(V1_PREFIX, "/pick-number"), useMiddlewares(svc.HandleLuckNumber, jm, cm))
 	http.HandleFunc(path.Join(V1_PREFIX, "/ws"), useMiddlewares(svc.HandleConnections, cm))
+	http.HandleFunc(path.Join(V1_PREFIX, "/draw"), useMiddlewares(svc.Handledraw, jm, cm))
 
 	go svc.Handlemessages()
 
