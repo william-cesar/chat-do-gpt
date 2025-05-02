@@ -33,7 +33,7 @@ type LuckNumberRequest struct {
 
 type DrawResponse struct {
 	Result string            `json:"result"`
-	Data   LuckNumberRequest `json:"data,omitempty"`
+	Data   LuckNumberRequest `json:"data"`
 }
 
 func pickNumber(req LuckNumberRequest) (string, error) {

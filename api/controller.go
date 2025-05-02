@@ -21,6 +21,7 @@ func HandleRequests() {
 	http.HandleFunc(path.Join(V1_PREFIX, "/pick-number"), useMiddlewares(svc.HandleLuckNumber, jm, cm))
 	http.HandleFunc(path.Join(V1_PREFIX, "/ws"), useMiddlewares(svc.HandleConnections, cm))
 	http.HandleFunc(path.Join(V1_PREFIX, "/draw"), useMiddlewares(svc.Handledraw, jm, cm))
+	http.HandleFunc(path.Join(V1_PREFIX, "/ai"), useMiddlewares(svc.HandleAiMessages, jm, cm))
 
 	go svc.Handlemessages()
 
