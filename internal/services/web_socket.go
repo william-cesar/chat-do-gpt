@@ -29,7 +29,6 @@ type WsMessage struct {
 	ConnectedUsers []UserResponse            `json:"connectedUsers"`
 	LuckNumber     int                       `json:"pickNumber,omitempty"`
 	NumbersList    map[int]LuckNumberRequest `json:"numbersList"`
-	Status         string                    `json:"status,omitempty"`
 }
 
 var clients = make(map[*websocket.Conn]clientConn)

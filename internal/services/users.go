@@ -19,7 +19,7 @@ type UserRequest struct {
 type UserInfo struct {
 	Role      string `json:"role"`
 	Color     string `json:"color"`
-	ShortName string `json:"shortName"`
+	ShortName string `json:"short"`
 }
 
 type UserResponse struct {
@@ -32,7 +32,17 @@ type ResponseMessage struct {
 	Message string `json:"message"`
 }
 
-var connectedUsers []UserResponse
+var connectedUsers []UserResponse = []UserResponse{
+	{
+		Id:       uuid.New().String(),
+		Username: "Gemini",
+		Info: UserInfo{
+			Role:      "admin",
+			Color:     generateUserColor("Gemini"),
+			ShortName: "🤖",
+		},
+	},
+}
 
 func generateUserColor(nm string) string {
 	var COLORS = []string{
