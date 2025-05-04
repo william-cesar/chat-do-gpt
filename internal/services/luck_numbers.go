@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/william-cesar/chat-do-gpt/internal/logger"
 )
@@ -34,6 +32,10 @@ type LuckNumberRequest struct {
 type DrawResponse struct {
 	Result string            `json:"result"`
 	Data   LuckNumberRequest `json:"data"`
+}
+
+type DrawRequest struct {
+	Number int `json:"number"`
 }
 
 func pickNumber(req LuckNumberRequest) (string, error) {
@@ -83,24 +85,8 @@ func HandleLuckNumber(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ResponseMessage{Message: msg})
 }
 
-func drawLuckNumber() LuckNumberRequest {
-	seed := rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	selectedNumbers := make([]int, 0)
-
-	for num, slot := range LuckNumbers {
-		if slot.Id != "" {
-			selectedNumbers = append(selectedNumbers, num)
-		}
-	}
-
-	winnerNumber := selectedNumbers[seed.Intn(len(selectedNumbers))]
-
-	return LuckNumberRequest{
-		Number:   winnerNumber,
-		Id:       LuckNumbers[winnerNumber].Id,
-		Username: LuckNumbers[winnerNumber].Username,
-	}
+func drawLuckNumber(luckNumber int) LuckNumberRequest {
+	return LuckNumbers[luckNumber]
 }
 
 func sendMessages(winner LuckNumberRequest) {
@@ -127,14 +113,7 @@ func sendMessages(winner LuckNumberRequest) {
 	}
 }
 
-func Handledraw(w http.ResponseWriter, r *http.Request) {
-	winner := drawLuckNumber()
-
+func handledraw(luckNumber int) {
+	winner := drawLuckNumber(luckNumber)
 	sendMessages(winner)
-
-	if err := json.NewEncoder(w).Encode(winner); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(ResponseMessage{Message: "Failed to draw winner"})
-		return
-	}
 }

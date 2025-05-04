@@ -34,11 +34,11 @@ type ResponseMessage struct {
 
 var connectedUsers []UserResponse = []UserResponse{
 	{
-		Id:       uuid.New().String(),
+		Id:       "gemini",
 		Username: "Gemini",
 		Info: UserInfo{
 			Role:      "admin",
-			Color:     generateUserColor("Gemini"),
+			Color:     "#FF8C00",
 			ShortName: "🤖",
 		},
 	},

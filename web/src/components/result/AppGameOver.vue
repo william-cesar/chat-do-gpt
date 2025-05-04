@@ -12,13 +12,10 @@
     <p class="text-gray-300">
       Melhor você arrumar um trabalho! Claramente você não fecha com a Tropa do Tigrinho.
     </p>
-    <Button severity="danger" label="Me tire daqui" @click="handleClick" />
   </main>
 </template>
 
 <script setup>
-import router from '@/router'
-import { Button } from 'primevue'
 import { computed } from 'vue'
 
 const message = computed(() => {
@@ -27,9 +24,4 @@ const message = computed(() => {
 
   return `Não foi dessa vez ${username}. 😿`
 })
-
-const handleClick = () => {
-  window.sessionStorage.clear()
-  router.push({ name: 'home' })
-}
 </script>

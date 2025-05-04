@@ -74,6 +74,12 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 		mu.Lock()
 		messages = append(messages, msg)
+		if msg.Id != "gemini" {
+			clients[conn] = clientConn{
+				id:    msg.Id,
+				uname: msg.Username,
+			}
+		}
 		mu.Unlock()
 
 		msg.ConnectedUsers = connectedUsers

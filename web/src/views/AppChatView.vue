@@ -9,6 +9,7 @@
       @onPickNumber="pickLuckNumber"
     />
   </section>
+  <AppResult v-model:visible="drawResult.visible" :result="drawResult.result" />
   <section class="h-full w-full sm:hidden flex items-center justify-center">
     <h2 class="text-2xl font-bold text-emerald-600 text-center">
       Não otimizado para telas pequenas
@@ -17,10 +18,10 @@
 </template>
 
 <script setup>
-import AppChat from '@/components/AppChat.vue'
-import AppDraw from '@/components/AppDraw.vue'
-import AppList from '@/components/AppList.vue'
-import router from '@/router'
+import AppChat from '@/components/chat/AppChat.vue'
+import AppDraw from '@/components/chat/AppDraw.vue'
+import AppList from '@/components/chat/AppList.vue'
+import AppResult from '@/components/result/AppResult.vue'
 import { chatService } from '@/services'
 import { onMounted, ref } from 'vue'
 
@@ -30,6 +31,10 @@ const users = ref([])
 const messages = ref([])
 const luckNumbers = ref({})
 const drawVisible = ref(false)
+const drawResult = ref({
+  visible: false,
+  result: null
+})
 
 onMounted(() => {
   wsConnection = new WebSocket(`${import.meta.env.VITE_WS_URL}/ws`)
@@ -108,12 +113,10 @@ const handleMessages = ({ data }) => {
 const handleResults = (data) => {
   const { result } = JSON.parse(data)
 
-  if (result === 'winner') {
-    window.sessionStorage.setItem('isWinner', true)
-    return router.push({ name: 'winner' })
+  drawResult.value = {
+    visible: true,
+    result
   }
-
-  return router.push({ name: 'gameOver' })
 }
 
 const sendMessage = (evt) => {
@@ -124,8 +127,7 @@ const sendMessage = (evt) => {
   if (message.toLowerCase().includes('@gemini')) {
     evt.message = evt.message.replace('@gemini', '')
 
-    const prompt = `${evt.username} disse: ${evt.message}.
-    Contexto adicional: há ${users.value.length} usuários conectados e ${messages.value.length} mensagens enviadas.`
+    const prompt = `${evt.username} disse: ${evt.message}`
 
     talkToGemini(prompt)
   }
@@ -140,7 +142,9 @@ const feelingLucky = async (prompt) => {
 }
 
 const pickLuckNumber = async (luckNumber) => {
-  await talkToGemini(`O número da sorte de ${currentUser.value.username} é ${luckNumber}`)
+  await talkToGemini(
+    `Diga ao chat que o número da sorte de ${currentUser.value.username} é ${luckNumber}`
+  )
 
   setTimeout(() => {
     drawVisible.value = false

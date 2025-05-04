@@ -11,10 +11,10 @@
         :label="key"
         rounded
         :key="key"
-        @click="pickLuckNumber(key, currentUser.id)"
+        @click="pickLuckNumber(key, currentUser)"
         :class="getBtnProps(val).classes"
         :severity="getBtnProps(val).severity"
-        :disabled="getBtnProps(val).disabled"
+        :disabled="getBtnProps(val).disabled || isNumberPicked"
       />
     </div>
   </Dialog>
@@ -23,7 +23,7 @@
 <script setup>
 import { pickNumberService } from '@/services'
 import { Button, Dialog, useToast } from 'primevue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps(['numbers', 'currentUser'])
 const emit = defineEmits(['onPickNumber'])
@@ -46,10 +46,13 @@ const getBtnProps = (val) => {
 }
 
 const toast = useToast()
+const isNumberPicked = ref(false)
 
-const pickLuckNumber = async (luckNumber, id) => {
+const pickLuckNumber = async (luckNumber, currentUser) => {
+  isNumberPicked.value = true
   try {
-    await pickNumberService({ luckNumber: Number(luckNumber), id })
+    const { id, username } = currentUser
+    await pickNumberService({ number: Number(luckNumber), id, username })
 
     toast.add({
       severity: 'success',
@@ -66,11 +69,12 @@ const pickLuckNumber = async (luckNumber, id) => {
       detail: 'Ocorreu um erro ao escolher o número da sorte. Tente novamente',
       life: 3000
     })
+    isNumberPicked.value = false
   }
 }
 
 const userHasNumber = computed(() => {
   if (!props.currentUser || !props.numbers) return false
-  return Object.values(props.numbers).includes(props.currentUser.id)
+  return !!Object.values(props.numbers).find((val) => val.id === props.currentUser.id)
 })
 </script>

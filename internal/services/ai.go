@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/google/generative-ai-go/genai"
 	"github.com/william-cesar/chat-do-gpt/internal/logger"
@@ -46,7 +48,7 @@ func handleAiClient(prompt string) (string, error) {
 		Parts: []genai.Part{genai.Text(AI_INSTRUCTIONS)},
 	}
 
-	response, err := model.GenerateContent(ctx, genai.Text(prompt))
+	response, err := model.GenerateContent(ctx, preparePrompt(prompt)...)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error generating AI response: %s", err)
 		logger.Log(logger.WARN, errMsg)
@@ -55,13 +57,56 @@ func handleAiClient(prompt string) (string, error) {
 
 	content := response.Candidates[0].Content
 
-	if (content) == nil {
+	if content == nil {
 		errMsg := "AI response not found"
 		logger.Log(logger.WARN, errMsg)
 		return "", errors.New("")
 	}
 
-	return fmt.Sprintf("%s", response.Candidates[0].Content.Parts[0]), nil
+	text := fmt.Sprintf("%s", content.Parts[0])
+
+	if err := extractLuckNumber(text); err != nil {
+		logger.Log(logger.WARN, fmt.Sprintf("Number '%s' could not be parsed", err))
+		return "", err
+	}
+
+	return text, nil
+}
+
+func extractLuckNumber(text string) error {
+	if strings.Contains(text, "O número sorteado é") {
+		list := strings.Split(text, " ")
+		number := strings.TrimSpace(list[len(list)-1])
+
+		luckNumber, err := strconv.Atoi(number)
+
+		if err != nil {
+			return errors.New("number not found")
+		}
+
+		logger.Log(logger.INFO, fmt.Sprintf("Number '%d' selected by AI", luckNumber))
+		handledraw(luckNumber)
+	}
+
+	return nil
+}
+
+func preparePrompt(prompt string) []genai.Part {
+	history := []genai.Part{}
+
+	for _, msg := range messages {
+		history = append(history, genai.Text(msg.Message))
+	}
+
+	history = append(history, genai.Text(fmt.Sprintf("Mapa de numeros sorteados: %v", LuckNumbers)))
+
+	if strings.Contains(prompt, "selecione o número da sorte") {
+		prompt = strings.Join([]string{prompt, "Selecione um número aleatório dentro do mapa de números selecionados e responda com 'Parabéns <nome do usuário>! O número sorteado é <número sorteado>'"}, "\n")
+	}
+
+	history = append(history, genai.Text(prompt))
+
+	return history
 }
 
 func HandleAiMessages(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AppHome from '@/views/AppHome.vue'
-import AppAdmin from '@/views/AppAdmin.vue'
 import AppNotFound from '@/views/AppNotFound.vue'
 
 const router = createRouter({
@@ -17,39 +16,6 @@ const router = createRouter({
       component: () => import('@/views/AppChatView.vue')
     },
     {
-      path: '/admin',
-      name: 'admin',
-      component: AppAdmin
-    },
-    {
-      path: '/winner',
-      name: 'winner',
-      component: () => import('@/views/AppWinner.vue'),
-      beforeEnter: (to, from, next) => {
-        const isWinner = window.sessionStorage.getItem('isWinner')
-
-        if (!isWinner) {
-          return next({ name: 'gameOver' })
-        }
-
-        next()
-      }
-    },
-    {
-      path: '/game-over',
-      name: 'gameOver',
-      component: () => import('@/views/AppGameOver.vue'),
-      beforeEnter: (to, from, next) => {
-        const isWinner = window.sessionStorage.getItem('isWinner')
-
-        if (isWinner) {
-          return next({ name: 'winner' })
-        }
-
-        next()
-      }
-    },
-    {
       path: '/:catchAll(.*)',
       name: 'notFound',
       component: AppNotFound
@@ -57,19 +23,11 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const chatUser = window.sessionStorage.getItem('chatUser')
 
-  if (to.name === 'admin') {
-    return next()
-  }
-
-  if (to.name !== 'home' && !chatUser) {
+  if (to.name == 'chat' && !chatUser) {
     return next({ name: 'home' })
-  }
-
-  if (to.name === 'home' && chatUser) {
-    return next({ name: 'chat' })
   }
 
   next()
