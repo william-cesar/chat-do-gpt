@@ -74,7 +74,7 @@ func handleAiClient(prompt string) (string, error) {
 }
 
 func extractLuckNumber(text string) error {
-	if strings.Contains(text, "O número sorteado é") {
+	if strings.Contains(text, "número sorteado é") {
 		list := strings.Split(text, " ")
 		number := strings.TrimSpace(list[len(list)-1])
 
