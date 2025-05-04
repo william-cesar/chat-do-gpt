@@ -81,6 +81,7 @@ func extractLuckNumber(text string) error {
 		luckNumber, err := strconv.Atoi(number)
 
 		if err != nil {
+			logger.Log(logger.WARN, fmt.Sprintf("Number '%s' could not be parsed", number))
 			return errors.New("number not found")
 		}
 
@@ -101,7 +102,7 @@ func preparePrompt(prompt string) []genai.Part {
 	history = append(history, genai.Text(fmt.Sprintf("Mapa de numeros sorteados: %v", LuckNumbers)))
 
 	if strings.Contains(prompt, "selecione o número da sorte") {
-		prompt = strings.Join([]string{prompt, "Selecione um número aleatório dentro do mapa de números selecionados e responda com 'Parabéns <nome do usuário>! O número sorteado é <número sorteado>'"}, "\n")
+		prompt = strings.Join([]string{prompt, "Selecione um número aleatório dentro do mapa de números selecionados e responda exatamente com 'Parabéns <nome do usuário>! O número sorteado é <número sorteado>'"}, "\n")
 	}
 
 	history = append(history, genai.Text(prompt))
