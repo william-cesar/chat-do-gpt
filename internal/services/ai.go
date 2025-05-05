@@ -44,6 +44,7 @@ func handleAiClient(prompt string) (string, error) {
 	defer client.Close()
 
 	model := client.GenerativeModel(AI_MODEL)
+	model.SetTemperature(0.1)
 	model.SystemInstruction = &genai.Content{
 		Parts: []genai.Part{genai.Text(AI_INSTRUCTIONS)},
 	}
