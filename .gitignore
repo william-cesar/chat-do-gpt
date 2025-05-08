@@ -1,5 +1,0 @@
-/client/node_modules
-/client/dist
-/client/.env*
-/api/.env
-/api/chat-do-gpt
